@@ -1,0 +1,188 @@
+/* Comparador de comisiones de exchanges — estilos base */
+:root {
+  color-scheme: light dark;
+  --bg: #f7f8fa;
+  --surface: #ffffff;
+  --surface-2: #f1f3f7;
+  --text: #14181f;
+  --muted: #5c6672;
+  --border: #dfe3ea;
+  --accent: #1f6feb;
+  --accent-soft: #e7f0ff;
+  --good: #0f7b45;
+  --warn: #a4620b;
+  --bad: #b3261e;
+  --radius: 12px;
+  --maxw: 1140px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1116;
+    --surface: #161b22;
+    --surface-2: #1c222b;
+    --text: #e7ecf3;
+    --muted: #9aa6b4;
+    --border: #2a323d;
+    --accent: #4f9bff;
+    --accent-soft: #16273f;
+    --good: #4cc38a;
+    --warn: #e3a008;
+    --bad: #f2777a;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 20px; }
+
+a { color: var(--accent); }
+a:hover { text-decoration: none; }
+
+/* Cabecera */
+.site-header {
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+.site-header .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 60px;
+}
+.brand { font-weight: 700; text-decoration: none; color: var(--text); letter-spacing: -0.01em; }
+.brand span { color: var(--accent); }
+.site-nav a { margin-left: 18px; font-size: 0.92rem; text-decoration: none; color: var(--muted); }
+.site-nav a:hover { color: var(--text); }
+
+/* Hero */
+.hero { padding: 44px 0 24px; }
+.hero h1 { font-size: clamp(1.7rem, 4vw, 2.6rem); line-height: 1.15; margin: 0 0 12px; letter-spacing: -0.02em; }
+.hero p.lead { font-size: 1.08rem; color: var(--muted); max-width: 70ch; margin: 0 0 16px; }
+.meta-line { font-size: 0.88rem; color: var(--muted); }
+.badge {
+  display: inline-block; background: var(--accent-soft); color: var(--accent);
+  border-radius: 999px; padding: 2px 10px; font-size: 0.78rem; font-weight: 600;
+}
+
+/* Controles */
+.controls {
+  display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin: 20px 0 8px;
+}
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+.field input, .field select {
+  background: var(--surface-2); color: var(--text);
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 9px 11px; font-size: 0.95rem; min-width: 190px;
+}
+.field input:focus, .field select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.hint { font-size: 0.8rem; color: var(--muted); margin: 4px 0 0; }
+
+/* Tabla */
+.table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+table.fees { width: 100%; border-collapse: collapse; font-size: 0.93rem; min-width: 940px; }
+table.fees th, table.fees td { padding: 12px 10px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+table.fees thead th {
+  /* La tabla vive dentro de .table-scroll (contenedor de scroll): un sticky vertical
+     aquí se posicionaría respecto a ese contenedor y taparía la primera fila. */
+  background: var(--surface-2);
+  font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted);
+  white-space: nowrap;
+}
+table.fees thead th.sortable { cursor: pointer; user-select: none; }
+table.fees thead th.sortable:hover { color: var(--text); }
+table.fees thead th[aria-sort="ascending"]::after { content: " ▲"; }
+table.fees thead th[aria-sort="descending"]::after { content: " ▼"; }
+table.fees tbody tr:hover { background: var(--surface-2); }
+table.fees tbody tr:last-child td { border-bottom: 0; }
+.ex-name { font-weight: 650; width: 24%; min-width: 210px; }
+.ex-name a { text-decoration: none; }
+.ex-region { display: block; font-size: 0.78rem; color: var(--muted); font-weight: 400; }
+.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.fiat { font-size: 0.86rem; width: 12%; }
+.cost { font-weight: 650; }
+.cheap { color: var(--good); }
+.na { color: var(--muted); }
+.ex-note { display: block; font-size: 0.8rem; line-height: 1.45; color: var(--muted); font-weight: 400; margin-top: 4px; }
+
+/* Secciones de contenido */
+section.block { padding: 34px 0 6px; }
+section.block h2 { font-size: 1.45rem; letter-spacing: -0.01em; margin: 0 0 10px; }
+section.block h3 { font-size: 1.08rem; margin: 22px 0 6px; }
+section.block p, section.block li { max-width: 78ch; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 14px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+.card h3 { margin-top: 0; }
+.card p { margin-bottom: 0; font-size: 0.93rem; color: var(--muted); }
+
+details.faq {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px;
+}
+details.faq summary { cursor: pointer; font-weight: 650; }
+details.faq p { margin-bottom: 0; }
+
+.callout {
+  border-left: 3px solid var(--warn); background: var(--surface);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 16px; margin: 18px 0; font-size: 0.93rem;
+}
+
+.site-footer {
+  margin-top: 48px; border-top: 1px solid var(--border);
+  background: var(--surface); padding: 26px 0; font-size: 0.86rem; color: var(--muted);
+}
+.site-footer a { color: var(--muted); }
+
+/* En móvil la tabla se convierte en tarjetas: sin scroll lateral y todo legible. */
+@media (max-width: 720px) {
+  .table-scroll { border: 0; background: transparent; overflow-x: visible; }
+  table.fees { min-width: 0; display: block; }
+  table.fees thead { display: none; }
+  table.fees tbody { display: block; }
+  table.fees tbody tr {
+    display: block; background: var(--surface);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 12px 14px; margin-bottom: 12px;
+  }
+  table.fees tbody tr:hover { background: var(--surface); }
+  table.fees tbody td { display: flex; justify-content: space-between; gap: 14px; border-bottom: 0; padding: 5px 0; }
+  table.fees tbody td[data-label]::before {
+    content: attr(data-label); color: var(--muted); font-size: 0.85rem; font-weight: 500;
+    flex: 0 0 auto; white-space: nowrap;
+  }
+  table.fees tbody td.ex-name {
+    display: block; padding: 0 0 8px; margin-bottom: 6px; border-bottom: 1px solid var(--border); width: auto;
+  }
+  table.fees tbody td.ex-name > a { font-size: 1.05rem; }
+  table.fees tbody td.fiat { font-size: 0.88rem; text-align: right; width: auto; }
+  table.fees tbody td.cost { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 9px; }
+
+  .hero { padding: 30px 0 18px; }
+  .site-nav { display: none; }        /* en móvil la navegación ocupaba media pantalla */
+  .hero p.lead { font-size: 1rem; }
+  .field input, .field select { min-width: 0; width: 100%; }
+  .field { flex: 1 1 100%; }
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}

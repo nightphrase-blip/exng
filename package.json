@@ -1,0 +1,11 @@
+{
+  "name": "comparador-comisiones-exchanges",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Página estática de comparación de comisiones de exchanges de criptomonedas.",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "serve": "python3 -m http.server 8080"
+  },
+  "license": "MIT"
+}

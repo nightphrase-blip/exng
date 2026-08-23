@@ -1,0 +1,26 @@
+[
+  {
+    "p": "¿Qué diferencia hay entre comisión maker y taker?",
+    "r": "La comisión maker se aplica cuando pones una orden limitada que queda en el libro y aporta liquidez; la taker, cuando ejecutas contra una orden que ya estaba ahí (una orden de mercado). Casi siempre la maker es más barata, así que operar con órdenes limitadas reduce lo que pagas sin cambiar de exchange."
+  },
+  {
+    "p": "¿Cuál es el exchange con comisiones más bajas?",
+    "r": "En operativa spot al nivel básico, los exchanges globales tipo Binance, OKX, Bybit, KuCoin o Crypto.com Exchange se mueven en torno al 0,08%–0,10%, mientras que plataformas como Kraken, Coinbase Advanced o Bitso parten de cifras más altas. Ahora bien, el más barato para ti depende de tu volumen, del método de depósito fiat y de si retiras a menudo: una comisión de retiro alta puede pesar más que la de trading."
+  },
+  {
+    "p": "¿Por qué la app me cobra más que la tabla?",
+    "r": "Muchos exchanges tienen dos productos: la compra rápida (botón \"Comprar\") y el mercado avanzado con libro de órdenes. La compra rápida añade un margen sobre el precio (spread) que puede superar el 1%–2%. Las cifras de esta tabla corresponden al mercado avanzado (Coinbase Advanced, Kraken Pro, Bit2Me Pro, etc.)."
+  },
+  {
+    "p": "¿Las comisiones de la tabla incluyen los costes de red?",
+    "r": "No. Al retirar criptomonedas pagas además la comisión de la red (Bitcoin, Ethereum, Solana…), que fija la blockchain y varía cada día. Algunos exchanges cobran un fijo por encima del coste real de red, así que conviene comparar también ese punto si sacas fondos con frecuencia."
+  },
+  {
+    "p": "¿Cómo bajo las comisiones que pago?",
+    "r": "Cuatro palancas: usar órdenes limitadas (tarifa maker), subir de nivel VIP por volumen a 30 días, pagar las comisiones con el token del exchange cuando ofrece descuento (BNB, KCS, CRO…) y agrupar retiros para no pagar varias veces el coste fijo."
+  },
+  {
+    "p": "¿Con qué frecuencia se actualiza esta comparativa?",
+    "r": "Se revisa periódicamente contra las páginas oficiales de tarifas de cada plataforma; la fecha de la última revisión aparece arriba. Aun así, un exchange puede cambiar sus tarifas en cualquier momento: confirma siempre en el enlace \"tarifas oficiales\" antes de operar."
+  }
+]
