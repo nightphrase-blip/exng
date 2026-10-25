@@ -65,6 +65,11 @@ Netlify, Vercel, Cloudflare Pages o cualquier hosting estático: la raíz del re
 - Si usas dominio propio en GitHub Pages, añade un fichero `CNAME` en la raíz con el dominio.
 - Da de alta el sitio en Google Search Console y envía `sitemap.xml`.
 
+## Juego de ahorro con DCA
+
+La carpeta [`dca/`](dca/LEEME.md) contiene un juego independiente («¿Le ganas al robot?») que
+se publica en `/dca/`. No usa el build de esta página; sus instrucciones están en `dca/LEEME.md`.
+
 ## Aviso
 
 Las comisiones son orientativas y cambian sin previo aviso; cada exchange aplica además

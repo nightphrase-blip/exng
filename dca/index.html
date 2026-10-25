@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>¿Le ganas al robot? · Juego de ahorro con DCA</title>
+<meta name="description" content="Juego para aprender a ahorrar con DCA: 48 meses con precios históricos reales contra un robot que invierte 100 € cada mes.">
+<meta name="theme-color" content="#4f46e5">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+<main class="app">
+
+  <!-- ============ PANTALLA 1: ELEGIR ACTIVO ============ -->
+  <section id="pantalla-inicio" class="pantalla">
+    <header class="portada">
+      <div class="portada-caras" aria-hidden="true"><span>🧑</span><span class="vs">vs</span><span>🤖</span></div>
+      <h1>¿Le ganas al robot?</h1>
+      <p class="entradilla">
+        Cada mes recibes <strong>100 €</strong> y decides qué hacer con ellos.
+        Un robot invierte 100 € todos los meses, pase lo que pase.
+        Tras <strong>48 meses</strong> con precios reales, ¿quién tendrá más dinero?
+      </p>
+    </header>
+
+    <details class="explicacion">
+      <summary>¿Qué es el DCA?</summary>
+      <p>
+        <strong>DCA</strong> (del inglés <em>Dollar Cost Averaging</em>, “promediar el coste”) consiste en
+        invertir <strong>la misma cantidad cada mes</strong>, sin mirar si el precio está alto o bajo.
+        Cuando el precio baja, con tus 100 € compras más; cuando sube, compras menos.
+        Así no tienes que adivinar el mejor momento para invertir. Eso es justo lo que hace el robot.
+      </p>
+    </details>
+
+    <h2 class="titulo-seccion">Elige con qué quieres jugar</h2>
+    <div id="lista-activos" class="lista-activos"></div>
+
+    <footer class="pie">
+      <p>Precios históricos <strong>mensuales y reales</strong>, tratados como si fueran euros. Juego educativo: no es una recomendación de inversión.</p>
+      <details>
+        <summary>Fuentes de los datos</summary>
+        <ul id="lista-fuentes"></ul>
+      </details>
+    </footer>
+  </section>
+
+  <!-- ============ PANTALLA 2: PARTIDA ============ -->
+  <section id="pantalla-juego" class="pantalla" hidden>
+    <header class="barra-juego">
+      <button id="btn-salir" class="btn-texto" type="button" aria-label="Salir de la partida">← Salir</button>
+      <div class="contador">
+        <span id="texto-mes">Mes 1 de 48</span>
+        <div class="progreso" role="progressbar" aria-valuemin="0" aria-valuemax="48" aria-labelledby="texto-mes">
+          <div id="barra-progreso" class="progreso-relleno"></div>
+        </div>
+      </div>
+      <span id="nombre-activo-juego" class="chip-activo">Activo</span>
+    </header>
+
+    <div class="rejilla-juego">
+      <section class="tarjeta tarjeta-grafico" aria-label="Gráfico del precio">
+        <div class="cabecera-grafico">
+          <div>
+            <div class="etiqueta" id="etiqueta-precio">Precio este mes</div>
+            <div class="precio-actual" id="precio-actual">—</div>
+          </div>
+          <div class="cambios">
+            <div id="cambio-mes" class="cambio">—</div>
+            <div id="cambio-total" class="cambio-suave">—</div>
+          </div>
+        </div>
+        <canvas id="grafico-juego" class="grafico" role="img" aria-label="Gráfico del precio"></canvas>
+        <p class="leyenda-grafico">
+          <span class="punto punto-compra"></span> tus compras
+          <span class="punto punto-venta"></span> tus ventas
+          <span class="sin-fechas">Sin fechas: ¡no sabes qué viene!</span>
+        </p>
+      </section>
+
+      <div class="panel-lateral">
+        <div class="marcadores">
+          <section class="tarjeta marcador marcador-jugador">
+            <div class="marcador-titulo"><span aria-hidden="true">🧑</span> Tú</div>
+            <div class="marcador-valor" id="valor-jugador">0 €</div>
+            <dl class="marcador-detalle">
+              <div><dt>Efectivo</dt><dd id="efectivo-jugador">0 €</dd></div>
+              <div><dt>Invertido vale</dt><dd id="invertido-jugador">0 €</dd></div>
+            </dl>
+          </section>
+          <section class="tarjeta marcador marcador-robot">
+            <div class="marcador-titulo"><span aria-hidden="true">🤖</span> Robot DCA</div>
+            <div class="marcador-valor" id="valor-robot">0 €</div>
+            <dl class="marcador-detalle">
+              <div><dt>Ha metido</dt><dd id="metido-robot">0 €</dd></div>
+              <div><dt>Cada mes</dt><dd>100&nbsp;€</dd></div>
+            </dl>
+          </section>
+        </div>
+
+        <section class="tarjeta acciones" aria-live="polite">
+          <p id="mensaje" class="mensaje">Has recibido tus primeros 100 €. ¿Qué haces con ellos?</p>
+          <button id="btn-invertir" class="btn btn-invertir" type="button">
+            <span class="btn-icono" aria-hidden="true">📈</span>
+            <span class="btn-texto-principal">Invertir todo <span id="importe-invertir" class="btn-importe"></span></span>
+          </button>
+          <button id="btn-guardar" class="btn btn-guardar" type="button">
+            <span class="btn-icono" aria-hidden="true">💰</span>
+            <span class="btn-texto-principal">Guardar en efectivo</span>
+          </button>
+          <button id="btn-vender" class="btn btn-vender" type="button" aria-expanded="false" aria-controls="opciones-venta">
+            <span class="btn-icono" aria-hidden="true">📉</span>
+            <span class="btn-texto-principal">Vender una parte</span>
+          </button>
+          <div id="opciones-venta" class="opciones-venta" hidden>
+            <button class="chip-venta" type="button" data-fraccion="0.25">25 %<small></small></button>
+            <button class="chip-venta" type="button" data-fraccion="0.5">50 %<small></small></button>
+            <button class="chip-venta" type="button" data-fraccion="1">Todo<small></small></button>
+          </div>
+          <p id="pista-venta" class="pista" hidden>Todavía no tienes nada invertido que vender.</p>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PANTALLA 3: RESULTADO ============ -->
+  <section id="pantalla-final" class="pantalla" hidden>
+    <header class="cabecera-final">
+      <div id="final-emoji" class="final-emoji" aria-hidden="true">🎉</div>
+      <h1 id="final-titulo">¡Has ganado al robot!</h1>
+      <p id="final-subtitulo" class="entradilla"></p>
+    </header>
+
+    <section class="tarjeta revelacion">
+      <div class="etiqueta">El activo era…</div>
+      <div class="revelacion-activo">
+        <span id="final-insignia" class="insignia"></span>
+        <span id="final-activo">—</span>
+      </div>
+      <p id="final-fechas" class="revelacion-fechas"></p>
+      <p id="final-evolucion" class="revelacion-evolucion"></p>
+    </section>
+
+    <section class="tarjeta">
+      <table class="tabla-resultado">
+        <thead>
+          <tr><th scope="col"></th><th scope="col">🧑 Tú</th><th scope="col">🤖 Robot</th></tr>
+        </thead>
+        <tbody id="tabla-resultado"></tbody>
+      </table>
+      <p id="nota-final" class="nota"></p>
+    </section>
+
+    <section class="tarjeta">
+      <h2 class="titulo-grafico">Cómo evolucionó vuestro dinero</h2>
+      <p class="leyenda-grafico">
+        <span class="linea linea-jugador"></span> Tú
+        <span class="linea linea-robot"></span> Robot
+      </p>
+      <canvas id="grafico-final-valor" class="grafico" role="img" aria-label="Valor de tu dinero y del robot mes a mes"></canvas>
+    </section>
+
+    <section class="tarjeta">
+      <h2 class="titulo-grafico">El precio real, ahora con fechas</h2>
+      <p class="leyenda-grafico">
+        <span class="punto punto-compra"></span> tus compras
+        <span class="punto punto-venta"></span> tus ventas
+      </p>
+      <canvas id="grafico-final-precio" class="grafico" role="img" aria-label="Precio real del activo con fechas"></canvas>
+    </section>
+
+    <section class="tarjeta leccion">
+      <h2>💡 Lo que nos enseña esta partida</h2>
+      <p id="leccion"></p>
+    </section>
+
+    <div class="botones-final">
+      <button id="btn-otra" class="btn btn-invertir" type="button">🔁 Jugar otra vez</button>
+      <button id="btn-cambiar" class="btn btn-guardar" type="button">Elegir otro activo</button>
+    </div>
+  </section>
+
+  <noscript><p class="aviso">Este juego necesita JavaScript activado.</p></noscript>
+</main>
+
+<script src="datos/precios.js"></script>
+<script src="logica.js"></script>
+<script src="grafico.js"></script>
+<script src="juego.js"></script>
+</body>
+</html>
