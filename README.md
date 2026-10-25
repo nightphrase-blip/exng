@@ -67,8 +67,9 @@ Netlify, Vercel, Cloudflare Pages o cualquier hosting estático: la raíz del re
 
 ## Juego de ahorro con DCA
 
-La carpeta [`dca/`](dca/LEEME.md) contiene un juego independiente («¿Le ganas al robot?») que
-se publica en `/dca/`. No usa el build de esta página; sus instrucciones están en `dca/LEEME.md`.
+La carpeta [`dca/`](dca/LEEME.md) contiene un juego independiente en 3D («La mesa del ahorro»)
+que se publica en `/dca/`. No usa el build de esta página; sus instrucciones están en
+`dca/LEEME.md`. Sus precios los actualiza cada noche `.github/workflows/precios-diarios.yml`.
 
 ## Aviso
 
