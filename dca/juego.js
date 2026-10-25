@@ -4,6 +4,7 @@
 
   const L = window.LogicaDCA;
   const G = window.GraficoDCA;
+  const R = window.RobotDCA;
   const ACTIVOS = window.DATOS_DCA || [];
 
   const $ = (selector) => document.querySelector(selector);
@@ -108,6 +109,7 @@
     $("#mensaje").textContent = "Has recibido tus primeros 100 €. ¿Qué haces con ellos?";
     mostrarPantalla("pantalla-juego");
     pintarPartida(false);
+    R.decir($("#escena-juego"), R.frase(misterio ? "empezarMisterio" : "empezar"));
   }
 
   // ---------------------------------------------------------------------------
@@ -205,6 +207,23 @@
     void mensaje.offsetWidth; // reinicia la animación del mensaje
     mensaje.classList.add("aparece");
     pintarPartida(true);
+    comentaElRobot(operacion);
+  }
+
+  function comentaElRobot(operacion) {
+    const { activo, inicio, mes } = partida;
+    const precioDe = (m) => activo.precios[inicio + m];
+    const comentario = R.comentarMes({
+      ultimoMes: mes === L.MESES_PARTIDA - 1,
+      operacion,
+      cambioMes: precioDe(mes) / precioDe(mes - 1) - 1,
+      cambioAlDecidir: precioDe(mes - 1) / precioDe(mes - 2) - 1,
+      ventaja: L.valorJugador(partida) - L.valorRobot(partida),
+      aportado: L.APORTACION * (mes + 1),
+      formatoPorcentaje: (v) => porcentaje(v).replace("+", ""),
+      formatoEuros: euros,
+    });
+    R.decir($("#escena-juego"), comentario.texto, comentario.animo);
   }
 
   function cerrarOpcionesVenta() {
@@ -236,7 +255,11 @@
     const empate = Math.abs(r.diferencia) < 1;
     const ganaJugador = !empate && r.diferencia > 0;
 
-    $("#final-emoji").textContent = empate ? "🤝" : ganaJugador ? "🎉" : "🤖";
+    R.decir(
+      $("#escena-final"),
+      R.frase(empate ? "empate" : ganaJugador ? "ganaJugador" : "ganaRobot"),
+      empate ? "neutral" : ganaJugador ? "glitch" : "victoria",
+    );
     $("#final-titulo").textContent = empate
       ? "¡Empate con el robot!"
       : ganaJugador ? "¡Has ganado al robot!" : "El robot gana esta vez";
@@ -335,10 +358,12 @@
   function volverAlInicio() {
     partida = null;
     mostrarPantalla("pantalla-inicio");
+    R.decir($("#escena-inicio"), R.frase("vuelta"));
   }
 
   $("#btn-otra").addEventListener("click", () => empezar(eleccion));
   $("#btn-cambiar").addEventListener("click", volverAlInicio);
 
   pintarInicio();
+  R.decir($("#escena-inicio"), R.frase("portada"));
 })();

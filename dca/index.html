@@ -15,7 +15,17 @@
   <!-- ============ PANTALLA 1: ELEGIR ACTIVO ============ -->
   <section id="pantalla-inicio" class="pantalla">
     <header class="portada">
-      <div class="portada-caras" aria-hidden="true"><span>🧑</span><span class="vs">vs</span><span>🤖</span></div>
+      <div class="tarjeta mesa mesa-portada">
+        <div class="mesa-luz" aria-hidden="true"></div>
+        <div id="escena-inicio" class="escena-robot escena-vertical" data-animo="neutral">
+          <div class="robot" aria-hidden="true"></div>
+          <div class="dialogo">
+            <div class="dialogo-nombre">ROBOT DCA</div>
+            <p class="dialogo-texto" aria-hidden="true"></p>
+            <p class="dialogo-lector solo-lectores" aria-live="polite"></p>
+          </div>
+        </div>
+      </div>
       <h1>¿Le ganas al robot?</h1>
       <p class="entradilla">
         Cada mes recibes <strong>100 €</strong> y decides qué hacer con ellos.
@@ -80,24 +90,35 @@
       </section>
 
       <div class="panel-lateral">
-        <div class="marcadores">
-          <section class="tarjeta marcador marcador-jugador">
-            <div class="marcador-titulo"><span aria-hidden="true">🧑</span> Tú</div>
-            <div class="marcador-valor" id="valor-jugador">0 €</div>
-            <dl class="marcador-detalle">
-              <div><dt>Efectivo</dt><dd id="efectivo-jugador">0 €</dd></div>
-              <div><dt>Invertido vale</dt><dd id="invertido-jugador">0 €</dd></div>
-            </dl>
-          </section>
-          <section class="tarjeta marcador marcador-robot">
-            <div class="marcador-titulo"><span aria-hidden="true">🤖</span> Robot DCA</div>
-            <div class="marcador-valor" id="valor-robot">0 €</div>
-            <dl class="marcador-detalle">
-              <div><dt>Ha metido</dt><dd id="metido-robot">0 €</dd></div>
-              <div><dt>Cada mes</dt><dd>100&nbsp;€</dd></div>
-            </dl>
-          </section>
-        </div>
+        <section class="tarjeta mesa" aria-label="Tú contra el robot">
+          <div class="mesa-luz" aria-hidden="true"></div>
+          <div id="escena-juego" class="escena-robot" data-animo="neutral">
+            <div class="robot" aria-hidden="true"></div>
+            <div class="dialogo">
+              <div class="dialogo-nombre">ROBOT DCA</div>
+              <p class="dialogo-texto" aria-hidden="true"></p>
+              <p class="dialogo-lector solo-lectores" aria-live="polite"></p>
+            </div>
+          </div>
+          <div class="marcadores">
+            <section class="marcador marcador-jugador">
+              <div class="marcador-titulo">Tú</div>
+              <div class="marcador-valor" id="valor-jugador">0 €</div>
+              <dl class="marcador-detalle">
+                <div><dt>Efectivo</dt><dd id="efectivo-jugador">0 €</dd></div>
+                <div><dt>Invertido</dt><dd id="invertido-jugador">0 €</dd></div>
+              </dl>
+            </section>
+            <section class="marcador marcador-robot">
+              <div class="marcador-titulo">Robot</div>
+              <div class="marcador-valor" id="valor-robot">0 €</div>
+              <dl class="marcador-detalle">
+                <div><dt>Ha metido</dt><dd id="metido-robot">0 €</dd></div>
+                <div><dt>Cada mes</dt><dd>100&nbsp;€</dd></div>
+              </dl>
+            </section>
+          </div>
+        </section>
 
         <section class="tarjeta acciones" aria-live="polite">
           <p id="mensaje" class="mensaje">Has recibido tus primeros 100 €. ¿Qué haces con ellos?</p>
@@ -127,7 +148,17 @@
   <!-- ============ PANTALLA 3: RESULTADO ============ -->
   <section id="pantalla-final" class="pantalla" hidden>
     <header class="cabecera-final">
-      <div id="final-emoji" class="final-emoji" aria-hidden="true">🎉</div>
+      <div class="tarjeta mesa mesa-final">
+        <div class="mesa-luz" aria-hidden="true"></div>
+        <div id="escena-final" class="escena-robot escena-vertical" data-animo="neutral">
+          <div class="robot" aria-hidden="true"></div>
+          <div class="dialogo">
+            <div class="dialogo-nombre">ROBOT DCA</div>
+            <p class="dialogo-texto" aria-hidden="true"></p>
+            <p class="dialogo-lector solo-lectores" aria-live="polite"></p>
+          </div>
+        </div>
+      </div>
       <h1 id="final-titulo">¡Has ganado al robot!</h1>
       <p id="final-subtitulo" class="entradilla"></p>
     </header>
@@ -145,7 +176,7 @@
     <section class="tarjeta">
       <table class="tabla-resultado">
         <thead>
-          <tr><th scope="col"></th><th scope="col">🧑 Tú</th><th scope="col">🤖 Robot</th></tr>
+          <tr><th scope="col"></th><th scope="col">Tú</th><th scope="col">Robot</th></tr>
         </thead>
         <tbody id="tabla-resultado"></tbody>
       </table>
@@ -187,6 +218,7 @@
 <script src="datos/precios.js"></script>
 <script src="logica.js"></script>
 <script src="grafico.js"></script>
+<script src="robot.js"></script>
 <script src="juego.js"></script>
 </body>
 </html>

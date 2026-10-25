@@ -2,8 +2,10 @@
 
 Juego web en español para aprender qué es el **DCA** (invertir la misma cantidad cada mes).
 Durante 48 meses recibes 100 € al mes y decides si invertir, guardar o vender, mientras un
-robot invierte 100 € cada mes pase lo que pase. Al final se comparan los resultados y se revelan
-el activo y las fechas reales.
+robot invierte 100 € cada mes pase lo que pase. El robot es un crupier metálico de mirada
+inquietante, en una mesa oscura con luz que parpadea (ambiente inspirado en *Buckshot Roulette*,
+con diseño propio): te habla cada mes, se burla si va ganando y se pone nervioso si le
+adelantas. Al final se comparan los resultados y se revelan el activo y las fechas reales.
 
 ## Cómo jugar
 
@@ -21,6 +23,7 @@ dca/
 ├── estilos.css                 ← diseño (modo claro/oscuro automático, móvil y PC)
 ├── logica.js                   ← reglas del juego (dinero, robot, resultado)
 ├── grafico.js                  ← dibuja los gráficos
+├── robot.js                    ← el robot rival: dibujo, ánimo y frases
 ├── juego.js                    ← conecta las reglas con la pantalla
 ├── datos/
 │   ├── sp500.csv … ethereum.csv  ← un precio por mes (mes,precio)

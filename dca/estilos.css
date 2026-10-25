@@ -25,6 +25,9 @@
   --grafico-previo: #f1f2f7;
   --sombra: 0 1px 2px rgba(20, 24, 40, 0.06), 0 6px 20px rgba(20, 24, 40, 0.06);
   --radio: 18px;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", "Courier New", monospace;
+  --mesa-texto: #ebe5cb;
+  --mesa-suave: #9aa197;
 
   --c-sp500: #2563eb;
   --c-nasdaq: #7c3aed;
@@ -121,29 +124,231 @@ button { font: inherit; color: inherit; }
   color: var(--texto);
 }
 
+.solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   El robot y su mesa oscura (siempre oscura, también en modo claro)
+   ========================================================================== */
+.mesa {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  color: var(--mesa-texto);
+  border-color: #232a26;
+  background:
+    radial-gradient(120% 90% at 50% -15%, rgba(190, 255, 212, 0.13), transparent 55%),
+    linear-gradient(180deg, #151a17, #08090a);
+}
+
+/* Viñeta: bordes más oscuros */
+.mesa::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 45%, rgba(0, 0, 0, 0.6));
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Líneas de televisor antiguo */
+.mesa::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.mesa > :not(.mesa-luz) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Fluorescente que zumba y parpadea */
+.mesa-luz {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(55% 60% at 50% 0%, rgba(214, 255, 226, 0.2), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  animation: fluorescente 7s infinite;
+}
+
+@keyframes fluorescente {
+  0%, 18%, 21%, 23%, 61%, 64%, 100% { opacity: 1; }
+  19%, 22% { opacity: 0.35; }
+  62% { opacity: 0.6; }
+}
+
+.escena-robot {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  --ojo: #f3edcf;
+}
+
+.escena-robot .robot {
+  width: 76px;
+  aspect-ratio: 1 / 1;
+}
+
+.escena-vertical {
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+}
+
+.escena-vertical .robot { width: 128px; }
+.escena-vertical .dialogo { width: 100%; max-width: 480px; }
+
+.robot-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.6));
+}
+
+.rb-inclinacion,
+.rb-cabeza,
+.rb-ojos,
+.rb-pupila,
+.rb-mandibula {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.rb-inclinacion {
+  transform-origin: 50% 100%;
+  transition: transform 0.4s ease;
+}
+
+.rb-cabeza { animation: respira 4s ease-in-out infinite; }
+.rb-ojos { animation: parpadeo 5.5s infinite; }
+
+.rb-pupila {
+  fill: var(--ojo);
+  transition: transform 0.25s ease, fill 0.3s ease;
+}
+
+.hablando .rb-mandibula { animation: habla 0.14s ease-in-out infinite alternate; }
+
+@keyframes respira {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(1.5px); }
+}
+
+@keyframes parpadeo {
+  0%, 95%, 100% { transform: scaleY(1); }
+  97% { transform: scaleY(0.1); }
+}
+
+@keyframes habla {
+  from { transform: translateY(0); }
+  to { transform: translateY(3.5px); }
+}
+
+/* Estados de ánimo */
+.escena-robot[data-animo="burla"] .rb-pupila { transform: scaleY(0.45); }
+.escena-robot[data-animo="burla"] .rb-inclinacion { transform: rotate(-6deg); }
+
+.escena-robot[data-animo="nervioso"] { --ojo: #ff5a45; }
+.escena-robot[data-animo="nervioso"] .rb-inclinacion { animation: tiembla 0.12s linear infinite; }
+
+.escena-robot[data-animo="victoria"] { --ojo: #a6ffb8; }
+.escena-robot[data-animo="victoria"] .rb-pupila { transform: scale(1.3); }
+.escena-robot[data-animo="victoria"] .rb-inclinacion { transform: rotate(4deg); }
+
+.escena-robot[data-animo="glitch"] { --ojo: #ff2b2b; }
+.escena-robot[data-animo="glitch"] .robot-svg { animation: averia 0.9s steps(1) infinite; }
+.escena-robot[data-animo="glitch"] .dialogo-texto { color: #ff8b80; animation: averia-texto 0.9s steps(1) infinite; }
+
+@keyframes tiembla {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-0.8px, 0.4px); }
+  75% { transform: translate(0.8px, -0.4px); }
+}
+
+@keyframes averia {
+  0%, 100% { transform: none; opacity: 1; filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.6)); }
+  12% { transform: translate(3px, -1px) skewX(8deg); }
+  24% { transform: translate(-4px, 1px); opacity: 0.6; filter: hue-rotate(90deg) saturate(3); }
+  36% { transform: none; opacity: 1; }
+  55% { transform: translate(2px, 0) skewX(-10deg) scaleY(0.96); }
+  68% { transform: translate(-1px, 2px); opacity: 0.8; }
+  80% { transform: none; }
+}
+
+@keyframes averia-texto {
+  0%, 100% { transform: none; }
+  20% { transform: translateX(2px); }
+  60% { transform: translateX(-2px); }
+}
+
+/* Caja de diálogo, estilo videojuego */
+.dialogo {
+  background: rgba(0, 0, 0, 0.62);
+  border: 1px solid rgba(235, 229, 203, 0.18);
+  border-radius: 6px;
+  padding: 8px 10px;
+  text-align: left;
+  box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.6);
+}
+
+.dialogo-nombre {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--mesa-suave);
+  margin-bottom: 4px;
+}
+
+.dialogo-texto {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.86rem;
+  line-height: 1.4;
+  color: var(--mesa-texto);
+  text-shadow: 0 0 8px rgba(235, 229, 203, 0.35);
+  min-height: 2.8em;
+}
+
+.dialogo-texto .resto { visibility: hidden; }
+
+.hablando .dialogo-texto .escrito::after {
+  content: "▌";
+  animation: cursor 0.5s steps(1) infinite;
+}
+
+@keyframes cursor {
+  50% { opacity: 0; }
+}
+
+.mesa .marcadores { margin-top: 12px; }
+
+.mesa-portada {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 20px 16px 16px;
+}
+
+.mesa-final { padding: 20px 16px 16px; }
+
 /* ==========================================================================
    Pantalla 1: inicio
    ========================================================================== */
 .portada {
   text-align: center;
   padding: 24px 8px 8px;
-}
-
-.portada-caras {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 2.6rem;
-  line-height: 1;
-}
-
-.portada-caras .vs {
-  font-size: 0.9rem;
-  font-weight: 800;
-  color: var(--sobre-acento);
-  background: var(--acento);
-  border-radius: 999px;
-  padding: 4px 10px;
 }
 
 h1 {
@@ -394,7 +599,7 @@ h1 {
 .grafico {
   display: block;
   width: 100%;
-  height: 200px;
+  height: 175px;
 }
 
 @media (min-width: 560px) {
@@ -403,6 +608,32 @@ h1 {
 
 @media (min-width: 860px) {
   .tarjeta-grafico .grafico { height: 360px; }
+  #escena-juego .robot { width: 96px; }
+}
+
+/* Móvil: los botones se quedan fijos abajo aunque hagas scroll,
+   y el marcador se compacta un poco. */
+@media (max-width: 859px) {
+  .acciones {
+    position: sticky;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    z-index: 5;
+    box-shadow: 0 -6px 24px rgba(10, 12, 20, 0.22);
+  }
+}
+
+@media (max-width: 559px) {
+  #escena-juego .robot { width: 64px; }
+  .dialogo-texto { font-size: 0.8rem; }
+  .mesa .marcadores { margin-top: 10px; gap: 8px; }
+  .marcador { padding: 8px 10px; }
+  .leyenda-grafico { margin-top: 4px; font-size: 0.75rem; }
+}
+
+/* Móviles bajos: gráfico más bajo para que la frase del robot no quede
+   tapada por los botones fijos. */
+@media (max-width: 859px) and (max-height: 760px) {
+  .tarjeta-grafico .grafico { height: 140px; }
 }
 
 .leyenda-grafico {
@@ -449,12 +680,21 @@ h1 {
 }
 
 .marcador {
-  padding: 12px 14px;
-  border-width: 2px;
-  transition: border-color 0.3s ease;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.marcador-titulo { font-weight: 700; font-size: 0.9rem; color: var(--texto-suave); }
+.marcador-titulo {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mesa-suave);
+}
 
 .marcador-valor {
   font-size: clamp(1.3rem, 5vw, 1.6rem);
@@ -463,13 +703,20 @@ h1 {
   font-variant-numeric: tabular-nums;
 }
 
-.marcador-jugador.va-ganando { border-color: var(--linea-jugador); }
-.marcador-robot.va-ganando { border-color: var(--linea-robot); }
+.marcador-jugador.va-ganando {
+  border-color: #8b84ff;
+  box-shadow: 0 0 18px rgba(139, 132, 255, 0.28);
+}
+
+.marcador-robot.va-ganando {
+  border-color: #ff5a45;
+  box-shadow: 0 0 18px rgba(255, 90, 69, 0.28);
+}
 
 .marcador-detalle {
-  margin: 6px 0 0;
+  margin: 4px 0 0;
   font-size: 0.8rem;
-  color: var(--texto-suave);
+  color: var(--mesa-suave);
 }
 
 .marcador-detalle div {
@@ -481,7 +728,7 @@ h1 {
 .marcador-detalle dd {
   margin: 0;
   font-weight: 600;
-  color: var(--texto);
+  color: var(--mesa-texto);
   font-variant-numeric: tabular-nums;
 }
 
@@ -625,19 +872,7 @@ h1 {
 
 .cabecera-final { text-align: center; padding-top: 12px; }
 
-.final-emoji {
-  font-size: 3.4rem;
-  line-height: 1;
-  animation: rebota 0.8s ease;
-}
-
-@keyframes rebota {
-  0% { transform: scale(0.3); opacity: 0; }
-  60% { transform: scale(1.15); opacity: 1; }
-  100% { transform: scale(1); }
-}
-
-.cabecera-final h1 { margin-top: 10px; }
+.cabecera-final h1 { margin-top: 16px; }
 
 .revelacion { text-align: center; }
 
