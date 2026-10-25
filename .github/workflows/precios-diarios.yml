@@ -1,0 +1,41 @@
+name: Precios diarios del juego DCA
+
+# Cada noche descarga los cierres de los 6 activos y guarda dca/datos/diario.*
+# Las tareas programadas solo se ejecutan en la rama principal del repositorio.
+on:
+  schedule:
+    - cron: "41 22 * * *" # 22:41 UTC, después del cierre de Wall Street
+  workflow_dispatch:
+  push:
+    paths:
+      - dca/herramientas/actualizar_precios_diarios.py
+      - .github/workflows/precios-diarios.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: precios-diarios-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Descargar precios
+        run: python3 dca/herramientas/actualizar_precios_diarios.py
+
+      - name: Guardar los precios nuevos en el repositorio
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dca/datos/diario.json dca/datos/diario.js
+          if git diff --cached --quiet; then
+            echo "No hay precios nuevos."
+            exit 0
+          fi
+          git commit -m "Precios diarios del juego DCA: $(date -u +%F)"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
