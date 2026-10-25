@@ -289,6 +289,7 @@
     $("#ajustes-info").textContent = t
       ? `Temporada actual: ${serieDe(t.activoId).nombre}, desde el ${F.fechaCorta(t.inicio)}. Ahorro diario: ${F.euros(t.ahorroDiario)}. Mejor racha: ${dias(perfil.mejorRacha)}.`
       : "";
+    reiniciarAbandonar();
     mostrarPanel("panel-ajustes");
   });
   $("#boton-guardar-ajustes").addEventListener("click", () => {
@@ -298,8 +299,22 @@
     guardar();
     cerrarPaneles();
   });
+  // Abandonar pide un segundo toque (los avisos del navegador no funcionan en todas partes).
+  function reiniciarAbandonar() {
+    const boton = $("#boton-abandonar");
+    boton.dataset.confirmar = "";
+    boton.textContent = "Abandonar esta temporada";
+    boton.hidden = !perfil.temporada;
+  }
   $("#boton-abandonar").addEventListener("click", () => {
-    if (!confirm("¿Seguro? Se perderá la temporada actual.")) return;
+    const boton = $("#boton-abandonar");
+    if (!boton.dataset.confirmar) {
+      boton.dataset.confirmar = "1";
+      boton.textContent = "Toca otra vez para perder la temporada";
+      return;
+    }
+    reiniciarAbandonar();
+    cerrarPaneles();
     perfil.temporada = null;
     guardar();
     escena.quitarMano();
