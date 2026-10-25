@@ -34,49 +34,53 @@ ACTIVOS = [
         "nombre": "S&P 500",
         "simbolo": "S&P",
         "descripcion": "Las 500 mayores empresas de Estados Unidos.",
-        "fuentes": [("yahoo", "^GSPC"), ("stooq", "^spx")],
+        "fuentes": [("yfinance", "^GSPC"), ("fred", "SP500"), ("stooq", "^spx")],
     },
     {
         "id": "nasdaq",
         "nombre": "Nasdaq",
         "simbolo": "NDQ",
         "descripcion": "La bolsa tecnológica de Estados Unidos (Nasdaq Composite).",
-        "fuentes": [("yahoo", "^IXIC"), ("stooq", "^ndq")],
+        "fuentes": [("yfinance", "^IXIC"), ("fred", "NASDAQCOM"), ("stooq", "^ndq")],
     },
     {
         "id": "ibex35",
         "nombre": "IBEX 35",
         "simbolo": "IBEX",
         "descripcion": "Las 35 mayores empresas de la bolsa española.",
-        "fuentes": [("yahoo", "^IBEX"), ("stooq", "^ibex")],
+        "fuentes": [("yfinance", "^IBEX"), ("yahoo", "^IBEX"), ("stooq", "^ibex")],
     },
     {
         "id": "oro",
         "nombre": "Oro",
         "simbolo": "Au",
         "descripcion": "El metal refugio de toda la vida (precio de una onza).",
-        "fuentes": [("yahoo", "GC=F"), ("stooq", "xauusd"), ("coingecko", "pax-gold")],
+        # Respaldo: PAXG, una criptomoneda que vale exactamente una onza de oro.
+        "fuentes": [("yfinance", "GC=F"), ("stooq", "xauusd"), ("kraken", "PAXGUSD")],
     },
     {
         "id": "bitcoin",
         "nombre": "Bitcoin",
         "simbolo": "₿",
         "descripcion": "La primera y más famosa criptomoneda.",
-        "fuentes": [("yahoo", "BTC-EUR"), ("coingecko", "bitcoin")],
+        "fuentes": [("yfinance", "BTC-EUR"), ("kraken", "XBTEUR"), ("coinbase", "BTC-EUR")],
     },
     {
         "id": "ethereum",
         "nombre": "Ethereum",
         "simbolo": "Ξ",
         "descripcion": "La segunda criptomoneda más grande.",
-        "fuentes": [("yahoo", "ETH-EUR"), ("coingecko", "ethereum")],
+        "fuentes": [("yfinance", "ETH-EUR"), ("kraken", "ETHEUR"), ("coinbase", "ETH-EUR")],
     },
 ]
 
 NOMBRE_FUENTE = {
+    "yfinance": "Yahoo Finance",
     "yahoo": "Yahoo Finance",
+    "fred": "FRED (Reserva Federal de St. Louis)",
     "stooq": "Stooq",
-    "coingecko": "CoinGecko",
+    "kraken": "Kraken",
+    "coinbase": "Coinbase",
 }
 
 
@@ -121,22 +125,53 @@ def stooq(simbolo):
     return leer_stooq(descargar(f"https://stooq.com/q/d/l/?s={urllib.parse.quote(simbolo)}&i=d"))
 
 
-def leer_coingecko(texto):
+def yfinance(simbolo):
+    # Librería que imita a un navegador para que Yahoo no bloquee la descarga.
+    # En GitHub Actions se instala con "pip install yfinance"; si no está, se salta.
+    import yfinance as yf
+
+    tabla = yf.Ticker(simbolo).history(period="2y", interval="1d", auto_adjust=False)
+    return [(indice.date().isoformat(), float(cierre))
+            for indice, cierre in tabla["Close"].dropna().items()]
+
+
+def leer_fred(texto):
     pares = []
-    for milisegundos, precio in json.loads(texto)["prices"]:
-        dia = datetime.fromtimestamp(milisegundos / 1000, tz=timezone.utc).date().isoformat()
-        pares.append((dia, float(precio)))
+    for fila in csv.reader(io.StringIO(texto)):
+        if len(fila) == 2 and fila[0][:1].isdigit() and fila[1] not in ("", "."):
+            pares.append((fila[0], float(fila[1])))
     return pares
 
 
-def coingecko(moneda):
-    divisa = "usd" if moneda == "pax-gold" else "eur"
-    url = (f"https://api.coingecko.com/api/v3/coins/{moneda}/market_chart"
-           f"?vs_currency={divisa}&days={DIAS_GUARDADOS}&interval=daily")
-    return leer_coingecko(descargar(url))
+def fred(serie):
+    return leer_fred(descargar(f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={serie}"))
 
 
-LECTORES = {"yahoo": yahoo, "stooq": stooq, "coingecko": coingecko}
+def leer_kraken(texto):
+    respuesta = json.loads(texto)
+    if respuesta.get("error"):
+        raise ValueError(respuesta["error"])
+    velas = next(v for k, v in respuesta["result"].items() if k != "last")
+    return [(datetime.fromtimestamp(v[0], tz=timezone.utc).date().isoformat(), float(v[4])) for v in velas]
+
+
+def kraken(par):
+    return leer_kraken(descargar(f"https://api.kraken.com/0/public/OHLC?pair={par}&interval=1440"))
+
+
+def leer_coinbase(texto):
+    # Cada vela: [hora, mínimo, máximo, apertura, cierre, volumen]
+    return [(datetime.fromtimestamp(v[0], tz=timezone.utc).date().isoformat(), float(v[4]))
+            for v in json.loads(texto)]
+
+
+def coinbase(producto):
+    return leer_coinbase(descargar(
+        f"https://api.exchange.coinbase.com/products/{producto}/candles?granularity=86400"))
+
+
+LECTORES = {"yfinance": yfinance, "yahoo": yahoo, "fred": fred, "stooq": stooq,
+            "kraken": kraken, "coinbase": coinbase}
 
 
 # ---------------------------------------------------------------------------
@@ -188,7 +223,8 @@ def main():
             if es_valido(pares):
                 conseguido = (fuente, pares)
                 break
-            print(f"  {fuente} ({simbolo}) devolvió datos incompletos o viejos")
+            ultimo = pares[-1][0] if pares else "ninguno"
+            print(f"  {fuente} ({simbolo}) devolvió datos incompletos o viejos: {len(pares)} días, último {ultimo}")
 
         datos = {k: activo[k] for k in ("id", "nombre", "simbolo", "descripcion")}
         if conseguido:

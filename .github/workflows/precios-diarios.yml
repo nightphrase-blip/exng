@@ -24,8 +24,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar yfinance (para descargar de Yahoo Finance)
+        run: pip install --quiet yfinance
+
       - name: Descargar precios
-        run: python3 dca/herramientas/actualizar_precios_diarios.py
+        run: python dca/herramientas/actualizar_precios_diarios.py
 
       - name: Guardar los precios nuevos en el repositorio
         run: |
